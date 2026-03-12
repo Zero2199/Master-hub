@@ -1,4 +1,4 @@
---[[ 
+[[ 
     PROJECT: MASTER HUB v5.0 PLATINUM (DASHBOARD)
     STYLE: PRO-DASHBOARD (LIVE UPDATE)
     OPTIMIZED: ANDROID 12 | NO-LAG LOOP
@@ -72,12 +72,4 @@ SeaTab:CreateButton({
    end,
 })
 
--- // 4. SETTINGS & KILL SWITCH // --
-local SettingsTab = Window:CreateTab("Settings", 4483362458)
-SettingsTab:CreateButton({
-   Name = "🚨 EMERGENCY KILL SWITCH",
-   Callback = function()
-       _G.AutoFarm = false
-       Rayfield:Destroy()
-   end,
-})
+-- // 4. SETTINGucin
