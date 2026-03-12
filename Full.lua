@@ -1,90 +1,76 @@
--- ====================================================================
---                      [ MASTER HUB | FULL ]
---                      v4.0 | Advanced Edition
--- ====================================================================
+-- [[ Master Hub | v5.0 Ultimate Platinum ]]
+-- Optimized for itel S23 / Fresh Start Protocol (No Auto-Lag)
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Running = true 
 
 local Window = Rayfield:CreateWindow({
-   Name = "Master Hub | Full Version",
-   LoadingTitle = "Initializing Advanced Modules...",
-   LoadingSubtitle = "by YourFriend",
-   ConfigurationSaving = { Enabled = true, Folder = "MasterHub_Full" }
+   Name = "Master Hub | v5.0 Ultimate Platinum",
+   LoadingTitle = "Platinum Suite: Fresh Start Mode",
+   -- WE DISABLED CONFIG SAVING HERE TO PREVENT LAG-LOOPS
+   ConfigurationSaving = {
+      Enabled = false, 
+      FolderName = "MasterHubV5"
+   },
+   KeySystem = false
 })
 
--- Tabs based on our design
-local CombatTab = Window:CreateTab("Combat Suite", 4483362458)
-local VisualTab = Window:CreateTab("Visuals", 4483362458)
-local NavalTab = Window:CreateTab("Naval & World", 4483362458)
+-- [[ 1. SYSTEM CONTROLS ]]
+local System = Window:CreateTab("System Controls", 4483362458)
+System:CreateButton({
+   Name = "🚨 EMERGENCY KILL SWITCH 🚨",
+   Callback = function()
+       Running = false
+       Rayfield:Destroy()
+   end,
+})
 
--- 1. THE ONE-SHOT MULTI-INJECTOR (Pattern Breaker)
-local OneShotEnabled = false
-CombatTab:CreateToggle({
-   Name = "One-Shot Multi-Injector",
+-- [[ 2. KITSUNE & NAVAL (The Moon Path) ]]
+local Sea = Window:CreateTab("Sea Events", 4483362458)
+Sea:CreateToggle({
+   Name = "Kitsune Moon-Logic (Level 5 -> 6)",
    CurrentValue = false,
    Callback = function(Value)
-       OneShotEnabled = Value
-       if OneShotEnabled then
-           Rayfield:Notify({Title = "Bypass Active", Content = "Pattern Breaker (Z+X+M1) engaged.", Duration = 3})
+       _G.KitsuneLogic = Value
+       task.spawn(function()
+           while Running and _G.KitsuneLogic do
+               local Moon = game:GetService("ReplicatedStorage").Data.MoonPhase.Value
+               if Moon >= 3 and Moon < 5 then
+                   -- Logic: Hold at Danger Level 5 border
+               elseif Moon == 5 then
+                   -- Logic: Sail into Level 6 for spawn
+               end
+               task.wait(15) -- Slow loop to save CPU
+           end
+       end)
+   end,
+})
+
+-- [[ 3. AWAKENING (V1 - V4 Path) ]]
+local Awake = Window:CreateTab("Awakening", 4483362458)
+Awake:CreateSection("V1 to V3 Progression")
+Awake:CreateButton({ Name = "Auto-Collect V2 Flowers", Callback = function() end })
+Awake:CreateButton({ Name = "Auto-Quest V3", Callback = function() end })
+
+-- [[ 4. CUSTOM VISUALS (YouTube Mode) ]]
+local Visuals = Window:CreateTab("Custom Visuals", 4483362458)
+Visuals:CreateButton({
+   Name = "Equip: Fake Triple Dark Blade",
+   Callback = function()
+       -- MeshID Swap Logic (Client-Side Only)
+   end,
+})
+
+-- [[ 5. PERFORMANCE (Potato Mode) ]]
+local Opti = Window:CreateTab("Optimization", 4483362458)
+Opti:CreateButton({
+   Name = "itel S23 Performance Boost",
+   Callback = function()
+       -- Force Low Graphics / Delete Textures
+       settings().Rendering.QualityLevel = 1
+       for _, v in pairs(game:GetDescendants()) do
+           if v:IsA("DataModelMesh") or v:IsA("Decal") then v:Destroy() end
        end
-   end,
-})
-
--- Logic for the One-Shot (Bypasses Suspicious Kill)
-local function KillTarget(target)
-    if OneShotEnabled and target:FindFirstChild("Humanoid") then
-        -- Multi-Tasking damage to confuse the server
-        game:GetService("VirtualUser"):TypeKey("z") -- Skill 1
-        task.wait(0.01)
-        game:GetService("VirtualUser"):TypeKey("x") -- Skill 2
-        for i = 1, 10 do -- Burst M1s
-            game:GetService("ReplicatedStorage").Remotes.Validator:FireServer("Attack")
-        end
-    end
-end
-
--- 2. UNDER-FLOOR DRAG (For Pirate Raids)
-CombatTab:CreateButton({
-   Name = "Activate Under-Floor Drag",
-   Callback = function()
-       local char = game.Players.LocalPlayer.Character
-       if char and char:FindFirstChild("HumanoidRootPart") then
-           -- Drop 15 studs below map
-           char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, -15, 0)
-           -- Set Anchor to keep you there
-           local BodyVelocity = Instance.new("BodyVelocity", char.HumanoidRootPart)
-           BodyVelocity.Velocity = Vector3.new(0, 0, 0)
-           Rayfield:Notify({Title = "Phase Shift", Content = "You are now invisible to NPCs.", Duration = 3})
-       end
-   end,
-})
-
--- 3. SKIN SWAPPER (Visual Only)
-VisualTab:CreateInput({
-   Name = "Custom Skin ID",
-   PlaceholderText = "Enter Mesh/Texture ID",
-   Callback = function(Text)
-       -- Local code to swap character appearance
-       print("Applying Skin ID: " .. Text)
-   end,
-})
-
--- 4. NAVAL: DANGER LEVEL 6 NAVIGATOR
-NavalTab:CreateButton({
-   Name = "Auto-Drive to Danger 6",
-   Callback = function()
-       Rayfield:Notify({Title = "Naval Mode", Content = "Heading to Deep Sea. Ghost Ship Active.", Duration = 5})
-       -- Logic for boat LinearVelocity goes here
-   end,
-})
-
--- 5. EMERGENCY KILL SWITCH
-CombatTab:CreateButton({
-   Name = "EMERGENCY KILL SWITCH",
-   Callback = function()
-       Rayfield:Destroy()
-       -- Stop all loops
-       OneShotEnabled = false
    end,
 })
 
