@@ -1,80 +1,100 @@
--- ====================================================================
---                      [ MASTER HUB | LIGHT ]
---                      Essentials & Performance
--- ====================================================================
+-- [[ Master Hub LIGHT | v5.0 ]]
+-- Optimized for itel S23 / Integrated Server Browser
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Running = true 
+
+-- [[ AUTO-OPTIMIZE STARTUP ]]
+settings().Rendering.QualityLevel = 1
+for _, v in pairs(game:GetDescendants()) do
+    if v:IsA("DataModelMesh") or v:IsA("Decal") then v:Destroy() end
+end
 
 local Window = Rayfield:CreateWindow({
-   Name = "Master Hub | Light Mode",
-   LoadingTitle = "Performance Optimized",
-   LoadingSubtitle = "by YourFriend",
-   ConfigurationSaving = { Enabled = false }
+   Name = "Master Hub LIGHT | v5.0",
+   LoadingTitle = "Lite Mode + Browser",
+   ConfigurationSaving = { Enabled = false } 
 })
 
-local Tab = Window:CreateTab("Essentials", 4483362458)
+local Main = Window:CreateTab("Main Menu", 4483362458)
 
--- 1. POTATO GRAPHICS (The Lag Killer)
-Tab:CreateButton({
-   Name = "Enable Potato Graphics",
+-- [[ SERVER BROWSER SECTION ]]
+Main:CreateSection("Server Management")
+
+Main:CreateButton({
+   Name = "🚀 Hop to Small Server (Less Lag)",
    Callback = function()
-       local g = game
-       local w = g.Workspace
-       local l = g.Lighting
-       local t = w:WaitForChild("Terrain")
-       t.WaterWaveSize = 0
-       t.WaterWaveSpeed = 0
-       t.WaterReflectance = 0
-       t.WaterTransparency = 0
-       l.GlobalShadows = false
-       l.FogEnd = 9e9
-       settings().Rendering.QualityLevel = 1
-       for i,v in pairs(g:GetDescendants()) do
-           if v:IsA("Part") or v:IsA("UnionOperation") or v:IsA("MeshPart") then
-               v.Material = Enum.Material.Plastic
-               v.Reflectance = 0
-           elseif v:IsA("Decal") then
-               v:Destroy()
+       local Http = game:GetService("HttpService")
+       local TPS = game:GetService("TeleportService")
+       local Api = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
+       
+       local function GetServer()
+           local body = Http:JSONDecode(game:HttpGet(Api))
+           for _, server in pairs(body.data) do
+               if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                   return server.id
+               end
            end
        end
-       Rayfield:Notify({Title = "Lag Reduced", Content = "Textures and shadows cleared!", Duration = 3})
-   end,
-})
 
--- 2. BASIC AUTO-FARM (Simple Loop)
-local AutoFarm = false
-Tab:CreateToggle({
-   Name = "Auto-Farm Level",
-   CurrentValue = false,
-   Callback = function(Value)
-       AutoFarm = Value
-       while AutoFarm do
-           task.wait(0.1)
-           -- Simple logic: Tween to NPC, Fire M1
-           -- (Note: Full logic depends on your specific level)
-           print("Farming...") 
+       local serverId = GetServer()
+       if serverId then
+           TPS:TeleportToPlaceInstance(game.PlaceId, serverId, game.Players.LocalPlayer)
+       else
+           Rayfield:Notify({Title = "Error", Content = "No small servers found!"})
        end
    end,
 })
 
--- 3. SEA EVENTS (Safe Mode)
-Tab:CreateButton({
-   Name = "TP to Danger Level 6",
+Main:CreateButton({
+   Name = "🔄 Rejoin Current Server",
    Callback = function()
-       -- Safety check: Ensure boat is spawned first
-       print("Navigating to Deep Ocean...")
-       -- Logic: Smooth tween to coordinates
+       game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, game.Players.LocalPlayer)
    end,
 })
 
--- 4. EMERGENCY KILL SWITCH
-Tab:CreateButton({
-   Name = "FORCE STOP & CLEANUP",
+-- [[ KITSUNE & UTILITY ]]
+Main:CreateSection("Kitsune & Safety")
+
+Main:CreateToggle({
+   Name = "Moon Tracker",
+   CurrentValue = false,
+   Callback = function(Value)
+       _G.Kitsune = Value
+       task.spawn(function()
+           while Running and _G.Kitsune do
+               local Moon = game:GetService("ReplicatedStorage").Data.MoonPhase.Value
+               if Moon == 5 then
+                   Rayfield:Notify({Title = "Kitsune", Content = "FULL MOON! Go to Level 6!"})
+               end
+               task.wait(20)
+           end
+       end)
+   end,
+})
+
+Main:CreateToggle({
+   Name = "Admin Evader",
+   CurrentValue = true,
+   Callback = function(Value)
+       _G.Evade = Value
+       task.spawn(function()
+           while Running and _G.Evade do
+               for _, p in pairs(game.Players:GetPlayers()) do
+                   if p:GetRankInGroup(2830050) > 0 then 
+                       game:GetService("TeleportService"):Teleport(game.PlaceId) 
+                   end
+               end
+               task.wait(15)
+           end
+       end)
+   end,
+})
+
+Main:CreateButton({
+   Name = "🚨 KILL SWITCH",
    Callback = function()
-       AutoFarm = false
+       Running = false
        Rayfield:Destroy()
    end,
 })
-
-Tab:CreateLabel("Light Mode: UI & Scripts minimized for FPS.")
-
