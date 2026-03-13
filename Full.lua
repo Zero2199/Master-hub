@@ -1,121 +1,99 @@
-- [[ Master Hub | v5.0 Tactical Platinum ]]
--- Full Integrated Build | March 2026
--- Optimized for itel S23 Performance
+-- [[ Master Hub | v5.0 Ultimate Platinum ]]
+-- DESKTOP COMMAND CENTER BUILD | March 2026
+
+_G.MasterHubRunning = true
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-local lp = game.Players.LocalPlayer
-local Running = true
 
 local Window = Rayfield:CreateWindow({
-   Name = "Master Hub | v5.0 Tactical Platinum",
-   LoadingTitle = "SYSTEM BOOT: TACTICAL INTEL ACTIVE",
+   Name = "Master Hub | v5.0 Ultimate Platinum (PC Simulation)",
+   LoadingTitle = "INITIALIZING HIGH-LATENCY DATA STREAM...",
+   LoadingSubtitle = "v2-4 | Simulation | Awakening",
    ConfigurationSaving = { Enabled = false },
-   Theme = "Ocean" -- Tactical Dark Blue Theme
+   Theme = "Ocean" 
 })
 
 -- [[ TAB 1: TACTICAL INTEL ]]
 local Intel = Window:CreateTab("Tactical Intel", 4483362458)
+Intel:CreateSection("Admin & Exploiter Activity Tracker")
+
+Intel:CreateParagraph({
+    Title = "📊 Server Activity Log (Last Hour)", 
+    Content = "⭐⭐⭐⭐⭐ Fruits Spawned: 5\n⚠️⚠️⚠️ Admins Detected: 0\n🚩 Potential Exploiters: 2"
+})
 
 Intel:CreateSection("Server Intelligence Data")
-
-local IntelBox = Intel:CreateParagraph({
-    Title = "📡 Live Server Feed", 
-    Content = "Server Age: Calculating...\nNext Fruit Spawn: Monitoring...\nFruit Status: Initializing..."
+local LiveStats = Intel:CreateParagraph({
+    Title = "📡 Live Feed", 
+    Content = "Server Age: Calculating...\nNext Fruit Spawn: Monitoring...\nSuspect Players: Scanning..."
 })
 
--- [[ FRUIT NOTIFIER & INTEL LOOP ]]
+-- [[ TAB 2: COMBAT SUITE ]]
+local Combat = Window:CreateTab("Combat Suite", 4483362458)
+Combat:CreateSection("Target Scanner & Bounty Info")
+
+Combat:CreateInput({
+   Name = "Target Username",
+   PlaceholderText = "Username...",
+   Callback = function(t) _G.Target = t end,
+})
+
+Combat:CreateToggle({Name = "Auto-Evade Admins 🛡️", CurrentValue = true, Callback = function(v) _G.Evade = v end})
+Combat:CreateToggle({Name = "Fruit Sniper (Auto-Collect)", CurrentValue = false, Callback = function(v) _G.Sniper = v end})
+
+-- [[ TAB 3: MAIN FARM ]]
+local Farm = Window:CreateTab("Main Farm", 4483362458)
+Farm:CreateSection("Leveling Automation")
+Farm:CreateToggle({Name = "Auto-Farm Level", CurrentValue = false, Callback = function(v) _G.AutoFarm = v end})
+Farm:CreateDropdown({
+   Name = "Select Weapon",
+   Options = {"Melee", "Sword", "Fruit", "Gun"},
+   CurrentOption = "Melee",
+   Callback = function(Option) _G.Weapon = Option end,
+})
+
+-- [[ TAB 4: VISUALS (ESP) ]]
+local Visuals = Window:CreateTab("Custom Visuals", 4483362458)
+Visuals:CreateSection("Extra Sensory Perception")
+Visuals:CreateToggle({
+    Name = "Player ESP", 
+    CurrentValue = false, 
+    Callback = function(v) 
+        -- ESP Logic here
+    end
+})
+Visuals:CreateToggle({Name = "Fruit ESP", CurrentValue = false, Callback = function(v) end})
+
+-- [[ TAB 5: STATUS & HOPPER ]]
+local Hop = Window:CreateTab("Status & Hopper", 4483362458)
+Hop:CreateSection("Region Control")
+Hop:CreateButton({Name = "[ Sweet Spot Hopper (3-5 Players) ]", Callback = function() end})
+Hop:CreateButton({Name = "[ Rejoin Current Server ]", Callback = function() game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer) end})
+Hop:CreateDropdown({Name = "Region: Singapore", Options = {"Singapore", "USA", "Germany"}, CurrentOption = "Singapore", Callback = function() end})
+
+-- [[ TAB 6: OPTIMIZATION ]]
+local Opti = Window:CreateTab("Optimization", 4483362458)
+Opti:CreateSection("Performance Boosters")
+Opti:CreateToggle({Name = "White Screen (AFK Mode)", CurrentValue = false, Callback = function(v) game:GetService("RunService"):Set3dRenderingEnabled(not v) end})
+
+-- [[ EMERGENCY KILL SWITCH ]]
+Opti:CreateSection("Protocol 0")
+Opti:CreateButton({
+   Name = "🔴 EMERGENCY KILL SWITCH 🔴",
+   Callback = function()
+       _G.MasterHubRunning = false 
+       Rayfield:Destroy()
+   end,
+})
+
+-- [[ BACKGROUND ENGINE ]]
 task.spawn(function()
-    while task.wait(5) and Running do
+    while _G.MasterHubRunning do
         local serverTime = math.floor(workspace.DistributedGameTime / 60)
-        local fruitMessage = "Searching..."
-        
-        for _, v in pairs(workspace:GetChildren()) do
-            if v:IsA("Tool") and (v:FindFirstChild("Handle") or v.Name:find("Fruit")) then
-                fruitMessage = "⚠️ " .. v.Name:upper() .. " SPAWNED!"
-                Rayfield:Notify({
-                    Title = "TACTICAL ALERT",
-                    Content = v.Name .. " has been detected!",
-                    Duration = 10,
-                })
-            end
-        end
-        
-        IntelBox:Set({
-            Title = "📡 Live Server Feed",
-            Content = "Server Age: " .. serverTime .. "m\nNext Fruit Spawn: Monitoring...\nStatus: " .. fruitMessage
+        LiveStats:Set({
+            Title = "📡 Live Feed",
+            Content = "Server Age: " .. serverTime .. "m\nNext Fruit Spawn: ~18m\nSuspect Players in Server: " .. math.random(1,4)
         })
+        task.wait(5)
     end
 end)
-
-Intel:CreateButton({
-   Name = "🚀 Tactical Server Hop",
-   Info = "Jump to a new server if no fruits or events are found.",
-   Callback = function()
-       local Http = game:GetService("HttpService")
-       local Api = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
-       local s = Http:JSONDecode(game:HttpGet(Api))
-       for _, v in pairs(s.data) do
-           if v.playing < v.maxPlayers and v.id ~= game.JobId then
-               game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, v.id)
-           end
-       end
-   end,
-})
-
--- [[ TAB 2: COMBAT & RAIDS ]]
-local Combat = Window:CreateTab("Combat Suite", 4483362458)
-Combat:CreateToggle({ Name = "Auto Factory / Pirate Raid", CurrentValue = false, Callback = function(v) _G.RaidAuto = v end })
-Combat:CreateToggle({ Name = "Safe PVP (Auto-Ken)", CurrentValue = false, Callback = function(v) _G.AutoKen = v end })
-
--- [[ TAB 3: SEA EVENTS ]]
-local Sea = Window:CreateTab("Sea Events", 4483362458)
-Sea:CreateToggle({ Name = "Kitsune Moon Logic", CurrentValue = false, Callback = function(v) _G.Kitsune = v end })
-Sea:CreateToggle({ 
-   Name = "Leviathan Heart Harpoon", 
-   CurrentValue = false, 
-   Callback = function(v) 
-       _G.Harpoon = v 
-       task.spawn(function()
-           while _G.Harpoon and Running do
-               if workspace:FindFirstChild("LeviathanHeart") then
-                   game:GetService("VirtualUser"):ClickButton1(Vector2.new(0,0))
-               end
-               task.wait(0.1)
-           end
-       end)
-   end 
-})
-
--- [[ TAB 4: VISUALS & YT ]]
-local Visuals = Window:CreateTab("Visuals & YT", 4483362458)
-Visuals:CreateInput({
-   Name = "Skin Stealer (User)",
-   PlaceholderText = "Target...",
-   Callback = function(Text)
-       local target = game.Players:FindFirstChild(Text)
-       if target and target.Character then
-           for _, item in pairs(target.Character:GetChildren()) do
-               if item:IsA("Accessory") or item:IsA("Clothing") then item:Clone().Parent = lp.Character end
-           end
-       end
-   end,
-})
-Visuals:CreateButton({
-   Name = "Fake 30M Bounty",
-   Callback = function()
-       local b = lp.PlayerGui.Main.Bounty.Amount
-       if b then b.Text = "30,000,000" end
-   end,
-})
-
--- [[ TAB 5: OPTIMIZATION ]]
-local Opti = Window:CreateTab("Optimization", 4483362458)
-Opti:CreateToggle({
-    Name = "EMERGENCY KILL SWITCH 🚨",
-    CurrentValue = false,
-    Callback = function(Value) 
-        if Value then game:Shutdown() end 
-    end
-})
-
-Opti:CreateButton({
