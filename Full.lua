@@ -1,4 +1,4 @@
--- [[ Master Hub | v5.0 Tactical Platinum ]]
+- [[ Master Hub | v5.0 Tactical Platinum ]]
 -- Full Integrated Build | March 2026
 -- Optimized for itel S23 Performance
 
@@ -119,11 +119,3 @@ Opti:CreateToggle({
 })
 
 Opti:CreateButton({
-   Name = "🚀 itel S23 Potato Mode",
-   Callback = function()
-       settings().Rendering.QualityLevel = 1
-       for _, v in pairs(game:GetDescendants()) do
-           if v:IsA("DataModelMesh") or v:IsA("Decal") then v:Destroy() end
-       end
-   end,
-})
